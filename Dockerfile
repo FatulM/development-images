@@ -11,7 +11,7 @@ RUN set -eux; \
     apt update; \
     apt install --no-install-recommends -y \
       gnupg ca-certificates binutils tzdata \
-      jq yq xq wget curl git htop tree nano vim dnsutils psmisc bridge-utils bzip2 xz-utils \
+      jq yq xq wget curl git htop tree nano vim dnsutils psmisc bridge-utils bzip2 xz-utils unzip \
       xvfb xauth \
       build-essential linux-headers-$(uname -r) \
       python3.12 python3.12-full python3.12-venv \
@@ -23,10 +23,16 @@ RUN set -eux; \
     wget -O fastfetch.deb https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-$(uname -m).deb; \
     dpkg -i fastfetch.deb; \
     rm fastfetch.deb; \
-    rm -rf /var/lib/apt/lists/*
-RUN java -Xshare:dump
+    rm -rf /var/lib/apt/lists/* \
 RUN sudo ln -s /usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/java-21
 ENV JAVA_HOME=/usr/lib/jvm/java-21
+RUN set -eux; \
+    find "$JAVA_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+    ldconfig
+RUN java -Xshare:dump
 RUN java --version
 RUN javac --version
 RUN python --version
+ENV HOME /root/
+WORKDIR $HOME
+CMD ["bash"]
