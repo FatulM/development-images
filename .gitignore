@@ -12,3 +12,9 @@
 
 ### VS Code ###
 .vscode/
+
+### Java compiler ###
+out/
+
+### Python ###
+**/__pycache__

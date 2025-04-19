@@ -29,7 +29,6 @@ RUN set -eux; \
       python3.12 python3.12-full python3.12-venv \
       openjdk-21-jdk-headless openjdk-21-jre-headless openjdk-21-source openjdk-21-doc \
       maven \
-      openssh-client openssh-server \
       ; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
@@ -73,18 +72,43 @@ RUN set -eux; \
     mvn --version;
 RUN set -eux; \
     export PYTHONDONTWRITEBYTECODE=1; \
+    export PYTHONUNBUFFERED=1; \
     python3 --version; \
     python3 -m venv --help | head -n 3
 # Check venv creation.
+COPY example.py /tmp/example_python/example.py
 RUN set -eux; \
     mkdir -p /tmp/; \
+    mkdir -p /tmp/example_python/; \
     export PYTHONDONTWRITEBYTECODE=1; \
+    export PYTHONUNBUFFERED=1; \
     python3 -m venv /tmp/example_venv/; \
     /tmp/example_venv/bin/python --version; \
     /tmp/example_venv/bin/pip --version; \
+    /tmp/example_venv/bin/python /tmp/example_python/example.py; \
+    rm -rf /tmp/example_python/; \
     rm -rf /tmp/example_venv/
+# Check java compiler.
+COPY Example.java /tmp/example_java/Example.java
+RUN set -eux; \
+    mkdir -p /tmp/; \
+    mkdir -p /tmp/example_java/; \
+    cd /tmp/example_java/; \
+    javac Example.java; \
+    java Example; \
+    cd /; \
+    rm -rf /tmp/example_java/
 # List apt installed packages.
 RUN apt list --installed
+# Run fastfetch.
+RUN fastfetch
+# Install ssh tools.
+RUN set -eux; \
+    apt update; \
+    DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y \
+    openssh-client openssh-server; \
+    apt clean; \
+    rm -rf /var/lib/apt/lists/*
 # Setup home and working directories.
 ENV HOME='/root'
 WORKDIR $HOME
@@ -92,3 +116,5 @@ WORKDIR $HOME
 EXPOSE 22
 # Use bash as default cmd.
 CMD ["bash"]
+# Set some oci labels.
+LABEL org.opencontainers.image.description="Docker image for use in developing Java and Python applications."
