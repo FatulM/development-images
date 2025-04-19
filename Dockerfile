@@ -29,6 +29,7 @@ RUN set -eux; \
       python3.12 python3.12-full python3.12-venv \
       openjdk-21-jdk-headless openjdk-21-jre-headless openjdk-21-source openjdk-21-doc \
       maven \
+      openssh-client openssh-server \
       ; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
@@ -74,15 +75,15 @@ RUN set -eux; \
     export PYTHONDONTWRITEBYTECODE=1; \
     python3 --version; \
     python3 -m venv --help | head -n 3
-# Check venv creation:
+# Check venv creation.
 RUN set -eux; \
     mkdir -p /tmp/; \
     export PYTHONDONTWRITEBYTECODE=1; \
     python3 -m venv /tmp/example_venv/; \
     /tmp/example_venv/bin/python --version; \
     /tmp/example_venv/bin/pip --version; \
-    rm -rf /tmp/example_venv/;
-# List apt installed packages:
+    rm -rf /tmp/example_venv/
+# List apt installed packages.
 RUN apt list --installed
 # Setup home and working directories.
 ENV HOME='/root'
