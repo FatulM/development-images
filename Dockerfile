@@ -12,7 +12,6 @@ RUN set -eux; \
 # Install needed dependencies. such as Java, Python and Maven.
 RUN set -eux; \
     LINUX_HEADERS_APT="linux-headers-$(uname -r)"; \
-    echo Linux headers apt: $LINUX_HEADERS_APT; \
     apt update; \
     DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y \
       gnupg ca-certificates binutils tzdata \
@@ -28,8 +27,10 @@ RUN set -eux; \
 # linux/arm64: https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-aarch64.deb
 # linux/amd64: https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-amd64.deb
 RUN set -eux; \
+    ARCH=$(uname -m); \
+    # We should fix arch for x86_64 to amd64.
+    ARCH_FIXED=$(echo $ARCH | sed "s/x86_64/amd64/g"); \
     FASTFETCH_URL="https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-$(uname -m).deb"; \
-    echo fastfetch url: $FASTFETCH_URL; \
     wget -O fastfetch.deb $FASTFETCH_URL; \
     dpkg -i fastfetch.deb; \
     rm fastfetch.deb; \
@@ -37,7 +38,6 @@ RUN set -eux; \
 # Some code found in eclipse temurin docker file.
 RUN set -eux; \
     JDK_INSTALL_DIR="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"; \
-    echo JDK install directory: $JDK_INSTALL_DIR; \
     find "$JDK_INSTALL_DIR/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
     ldconfig
 # Precache Java CDS files.
@@ -47,7 +47,6 @@ RUN java -Xshare:dump
 # TODO: how to make dynamic env variables ?
 RUN set -eux; \
     JDK_INSTALL_DIR="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"; \
-    echo JDK install directory: $JDK_INSTALL_DIR; \
     mkdir -p /opt/java/; \
     sudo ln -s $JDK_INSTALL_DIR /opt/java/openjdk
 ENV JAVA_HOME='/opt/java/openjdk'
