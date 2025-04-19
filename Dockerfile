@@ -22,13 +22,13 @@ RUN set -eux; \
       maven \
       ; \
     rm -rf /var/lib/apt/lists/*
-# Install fastfetch from GitHub release page:
+# Install fastfetch from GitHub release page.
 RUN set -eux; \
     wget -O fastfetch.deb https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-$(uname -m).deb; \
     dpkg -i fastfetch.deb; \
     rm fastfetch.deb; \
     rm -rf /var/lib/apt/lists/*
-# Some code found in eclipse temurin docker file:
+# Some code found in eclipse temurin docker file.
 RUN set -eux; \
     find "/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
     ldconfig
@@ -41,6 +41,8 @@ RUN set -eux; \
     mkdir -p /opt/java/; \
     sudo ln -s /usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture) /opt/java/openjdk
 ENV JAVA_HOME='/opt/java/openjdk'
+# Update path environment variable for Java.
+ENV PATH=$JAVA_HOME/bin:$PATH
 # Setup some more environment variable.
 ENV JAVA_VERSION='21'
 ENV PYTHON_VERSION='3.12'
