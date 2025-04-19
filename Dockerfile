@@ -23,16 +23,20 @@ RUN set -eux; \
     wget -O fastfetch.deb https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-$(uname -m).deb; \
     dpkg -i fastfetch.deb; \
     rm fastfetch.deb; \
-    rm -rf /var/lib/apt/lists/* \
+    rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    find "/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+    ldconfig
+RUN java -Xshare:dump
+# TODO: how to make dynamic env variables ?
 RUN sudo ln -s /usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture) /usr/lib/jvm/java-21
 ENV JAVA_HOME=/usr/lib/jvm/java-21
 RUN set -eux; \
-    find "$JAVA_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
-    ldconfig
-RUN java -Xshare:dump
-RUN java --version
-RUN javac --version
-RUN python --version
-ENV HOME /root/
+    java --version; \
+    javac --version; \
+    mvn --version; \
+    python --version;
+ENV HOME=/root/
 WORKDIR $HOME
+EXPOSE 22
 CMD ["bash"]
