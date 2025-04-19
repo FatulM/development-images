@@ -8,6 +8,7 @@ RUN set -eux; \
     DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y locales; \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen; \
     locale-gen en_US.UTF-8; \
+    apt clean; \
     rm -rf /var/lib/apt/lists/*
 # Install needed dependencies. such as Java, Python and Maven.
 RUN set -eux; \
@@ -22,6 +23,7 @@ RUN set -eux; \
       openjdk-21-jdk-headless openjdk-21-jre-headless openjdk-21-source openjdk-21-doc \
       maven \
       ; \
+    apt clean; \
     rm -rf /var/lib/apt/lists/*
 # Install fastfetch from GitHub release page.
 # linux/arm64: https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-aarch64.deb
@@ -34,6 +36,7 @@ RUN set -eux; \
     wget -O fastfetch.deb $FASTFETCH_URL; \
     dpkg -i fastfetch.deb; \
     rm fastfetch.deb; \
+    apt clean; \
     rm -rf /var/lib/apt/lists/*
 # Some code found in eclipse temurin docker file.
 RUN set -eux; \
@@ -60,7 +63,9 @@ RUN set -eux; \
     java --version; \
     javac --version; \
     mvn --version; \
-    python --version;
+    export PYTHONDONTWRITEBYTECODE=1; \
+    python3 --version; \
+    pip3 --version;
 # Setup home and working directories.
 ENV HOME='/root'
 WORKDIR $HOME
