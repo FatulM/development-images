@@ -69,11 +69,21 @@ ENV PYTHON_VERSION='3.12'
 RUN set -eux; \
     java --version; \
     javac --version; \
-    mvn --version; \
+    mvn --version;
+RUN set -eux; \
     export PYTHONDONTWRITEBYTECODE=1; \
     python3 --version; \
-    python3 -m pip --version; \
     python3 -m venv --help | head -n 3
+# Check venv creation:
+RUN set -eux; \
+    mkdir -p /tmp/; \
+    export PYTHONDONTWRITEBYTECODE=1; \
+    python3 -m venv /tmp/example_venv/; \
+    /tmp/example_venv/bin/python --version; \
+    /tmp/example_venv/bin/pip --version; \
+    rm -rf /tmp/example_venv/;
+# List apt installed packages:
+RUN apt list --installed
 # Setup home and working directories.
 ENV HOME='/root'
 WORKDIR $HOME
