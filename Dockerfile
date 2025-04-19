@@ -30,7 +30,7 @@ RUN set -eux; \
     ARCH=$(uname -m); \
     # We should fix arch for x86_64 to amd64.
     ARCH_FIXED=$(echo $ARCH | sed "s/x86_64/amd64/g"); \
-    FASTFETCH_URL="https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-$(uname -m).deb"; \
+    FASTFETCH_URL="https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-${ARCH_FIXED}.deb"; \
     wget -O fastfetch.deb $FASTFETCH_URL; \
     dpkg -i fastfetch.deb; \
     rm fastfetch.deb; \
