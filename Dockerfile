@@ -48,7 +48,7 @@ RUN java -Xshare:dump
 RUN set -eux; \
     JDK_INSTALL_DIR="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"; \
     mkdir -p /opt/java/; \
-    sudo ln -s $JDK_INSTALL_DIR /opt/java/openjdk
+    ln -s $JDK_INSTALL_DIR /opt/java/openjdk
 ENV JAVA_HOME='/opt/java/openjdk'
 # Update path environment variable for Java.
 ENV PATH=$JAVA_HOME/bin:$PATH
