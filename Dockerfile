@@ -1,6 +1,12 @@
 # syntax=docker/dockerfile:1
 # Use latest Ubuntu LTS as base image.
 FROM ubuntu:24.04
+# Upgrade dependencies:
+RUN set -eux; \
+    apt update; \
+    DEBIAN_FRONTEND=noninteractive apt upgrade -y; \
+    apt clean; \
+    rm -rf /var/lib/apt/lists/*
 # Setup language and Locale.
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN set -eux; \
@@ -15,10 +21,11 @@ RUN set -eux; \
     LINUX_HEADERS_APT="linux-headers-$(uname -r)"; \
     apt update; \
     DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y \
-      gnupg ca-certificates binutils tzdata \
+      gnupg ca-certificates binutils tzdata fontconfig p11-kit \
       jq yq xq wget curl git htop tree nano vim dnsutils psmisc bridge-utils bzip2 xz-utils unzip \
       xvfb xauth \
       build-essential $LINUX_HEADERS_APT \
+      dpkg-dev gcc gnupg libbluetooth-dev libbz2-dev libc6-dev libdb-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev \
       python3.12 python3.12-full python3.12-venv \
       openjdk-21-jdk-headless openjdk-21-jre-headless openjdk-21-source openjdk-21-doc \
       maven \
@@ -65,7 +72,8 @@ RUN set -eux; \
     mvn --version; \
     export PYTHONDONTWRITEBYTECODE=1; \
     python3 --version; \
-    pip3 --version;
+    python3 -m pip --version; \
+    python3 -m venv --help | head -n 3
 # Setup home and working directories.
 ENV HOME='/root'
 WORKDIR $HOME
