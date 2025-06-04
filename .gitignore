@@ -15,6 +15,7 @@
 
 ### Java compiler ###
 out/
+*.class
 
 ### Python ###
 **/__pycache__
