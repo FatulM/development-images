@@ -1,8 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:24.04
 
-SHELL ["/bin/bash", "-eux"]
-
 ENV LANG='en_US.UTF-8'
 ENV LANGUAGE='en_US:en'
 ENV LC_ALL='en_US.UTF-8'
@@ -12,7 +10,8 @@ ENV HOME='/root'
 ENV JAVA_HOME='/opt/java/openjdk'
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-RUN DEBIAN_FRONTEND=noninteractive; \
+RUN set -eux; \
+    DEBIAN_FRONTEND=noninteractive; \
     apt update; \
     apt upgrade -y; \
     apt install --no-install-recommends -y \
@@ -33,7 +32,8 @@ RUN DEBIAN_FRONTEND=noninteractive; \
     locale-gen en_US.UTF-8; \
     apt list --installed;
 
-RUN PYTHONUNBUFFERED=1; \
+RUN set -eux; \
+    PYTHONUNBUFFERED=1; \
     ARCH=$(dpkg --print-architecture); \
     JDK_INSTALL_DIR="/usr/lib/jvm/java-21-openjdk-${ARCH}"; \
     find "$JDK_INSTALL_DIR/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
@@ -47,7 +47,8 @@ RUN PYTHONUNBUFFERED=1; \
     python3 --version; \
     python3 -m venv --help | head -n 3;
 
-RUN ARCH=$(uname -m); \
+RUN set -eux; \
+    ARCH=$(uname -m); \
     ARCH1=$(echo $ARCH | sed "s/x86_64/amd64/g"); \
     FASTFETCH_URL="https://github.com/fastfetch-cli/fastfetch/releases/download/2.44.0/fastfetch-linux-${ARCH1}.deb"; \
     wget -O fastfetch.deb $FASTFETCH_URL; \
