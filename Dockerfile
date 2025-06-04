@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:24.04
 
-SHELL ["/bin/bash", "-eux", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eux"]
 
 ENV LANG='en_US.UTF-8'
 ENV LANGUAGE='en_US:en'
