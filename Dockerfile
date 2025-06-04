@@ -59,6 +59,6 @@ RUN ARCH=$(uname -m); \
 
 WORKDIR $HOME
 
-EXPOSE 22, 80, 443
+EXPOSE 22 80 443
 
 CMD ["bash"]
