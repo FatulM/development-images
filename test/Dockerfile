@@ -20,4 +20,5 @@ RUN set -eux; \
     javac --version; \
     mvn --version; \
     javac Example.java; \
-    java Example;
+    java Example; \
+    fastfetch;
