@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:1
-FROM ghcr.io/FatulM/development-images:latest
+
+ARG BASE_IMAGE=ghcr.io/FatulM/development-images:latest
+
+FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1
 
