@@ -1,14 +1,10 @@
 # syntax=docker/dockerfile:1
-# Use latest Ubuntu LTS as base image.
 FROM ubuntu:24.04
-# Hardened shell config.
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-# Upgrade dependencies.
 RUN apt update; \
     DEBIAN_FRONTEND=noninteractive apt upgrade -y; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
-# Setup language and Locale.
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN apt update; \
     DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y locales; \
@@ -16,7 +12,6 @@ RUN apt update; \
     locale-gen en_US.UTF-8; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
-# Install needed dependencies. such as Java, Python and Maven.
 RUN LINUX_HEADERS_APT="linux-headers-$(uname -r)"; \
     apt update; \
     DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y \
@@ -31,11 +26,7 @@ RUN LINUX_HEADERS_APT="linux-headers-$(uname -r)"; \
       ; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
-# Install fastfetch from GitHub release page.
-# linux/arm64: https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-aarch64.deb
-# linux/amd64: https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-amd64.deb
 RUN ARCH=$(uname -m); \
-    # We should fix arch for x86_64 to amd64.
     ARCH_FIXED=$(echo $ARCH | sed "s/x86_64/amd64/g"); \
     FASTFETCH_URL="https://github.com/fastfetch-cli/fastfetch/releases/download/2.41.0/fastfetch-linux-${ARCH_FIXED}.deb"; \
     wget -O fastfetch.deb $FASTFETCH_URL; \
@@ -43,25 +34,17 @@ RUN ARCH=$(uname -m); \
     rm fastfetch.deb; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
-# Some code found in eclipse temurin docker file.
 RUN JDK_INSTALL_DIR="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"; \
     find "$JDK_INSTALL_DIR/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
     ldconfig
-# Precache Java CDS files.
 RUN java -Xshare:dump
-# Setup Java home environment variable.
-# I am making a workaround, since the directory is architecture dependent.
-# TODO: how to make dynamic env variables ?
 RUN JDK_INSTALL_DIR="/usr/lib/jvm/java-21-openjdk-$(dpkg --print-architecture)"; \
     mkdir -p /opt/java/; \
     ln -s $JDK_INSTALL_DIR /opt/java/openjdk
 ENV JAVA_HOME='/opt/java/openjdk'
-# Update path environment variable for Java.
 ENV PATH=$JAVA_HOME/bin:$PATH
-# Setup some more environment variable.
 ENV JAVA_VERSION='21'
 ENV PYTHON_VERSION='3.12'
-# Check installed app versions.
 RUN java --version; \
     javac --version; \
     mvn --version;
@@ -69,7 +52,6 @@ RUN export PYTHONDONTWRITEBYTECODE=1; \
     export PYTHONUNBUFFERED=1; \
     python3 --version; \
     python3 -m venv --help | head -n 3
-# Check venv creation.
 COPY example.py /tmp/example_python/example.py
 RUN mkdir -p /tmp/; \
     mkdir -p /tmp/example_python/; \
@@ -81,7 +63,6 @@ RUN mkdir -p /tmp/; \
     /tmp/example_venv/bin/python /tmp/example_python/example.py; \
     rm -rf /tmp/example_python/; \
     rm -rf /tmp/example_venv/
-# Check java compiler.
 COPY Example.java /tmp/example_java/Example.java
 RUN mkdir -p /tmp/; \
     mkdir -p /tmp/example_java/; \
@@ -90,20 +71,14 @@ RUN mkdir -p /tmp/; \
     java Example; \
     cd /; \
     rm -rf /tmp/example_java/
-# List apt installed packages.
 RUN apt list --installed
-# Run fastfetch.
 RUN fastfetch
-# Install ssh tools.
 RUN apt update; \
     DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y \
     openssh-client openssh-server; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*
-# Setup home and working directories.
 ENV HOME='/root'
 WORKDIR $HOME
-# Expose some ports such as ssh (22).
 EXPOSE 22, 80, 443
-# Use bash as default cmd.
 CMD ["bash"]
