@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:24.04
 
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eux", "pipefail", "-c"]
 
 ENV LANG='en_US.UTF-8'
 ENV LANGUAGE='en_US:en'
@@ -25,7 +25,7 @@ RUN DEBIAN_FRONTEND=noninteractive; \
           python3.12 python3.12-full python3.12-venv \
           openjdk-21-jdk-headless openjdk-21-jre-headless openjdk-21-source openjdk-21-doc \
           maven \
-          openssh-client openssh-server; \
+          openssh-client openssh-server \
           ; \
     apt clean; \
     rm -rf /var/lib/apt/lists/*; \
