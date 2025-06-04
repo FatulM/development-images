@@ -36,3 +36,5 @@ You can run the images using something like:
 ```shell
 docker run -it --rm -v $(pwd):/root/workspace -w /root/workspace ghcr.io/FatulM/development-images:latest
 ```
+
+Test folder contains a dockerfile to test the built image.
