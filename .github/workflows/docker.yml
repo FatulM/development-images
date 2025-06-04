@@ -72,3 +72,19 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      # Test the built docker image on x86_64.
+      - name: Test Built Image
+        run: |
+          BASE_IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+          if [ -z "${BASE_IMAGE_TAG}" ]; then
+            echo "::error::Could not determine base image tag from metadata."
+            exit 1
+          fi
+          echo "Testing with base image: ${BASE_IMAGE_TAG}"
+          docker build \
+            --build-arg BASE_IMAGE="${BASE_IMAGE_TAG}" \
+            -t ${{ env.IMAGE_NAME }}-test:${{ github.sha }} \
+            -f test/Dockerfile \
+            ./test
+          echo "Test build successful."
